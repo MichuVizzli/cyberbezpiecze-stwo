@@ -1,0 +1,24 @@
+# DLL Hijacking czym jest?
+Metoda ataku na system Windows. Haker oszukuje program, by ten nie wgrał systemowego pliku typu .dll, tylko ten spreparowany.
+# Jak wygląda attak?
+Użytkownik otwiera calc.exe -> calc.exe szuka wymaganej biblioteki WININET.dll -> złośliwy plik zostaje umieszczony w katalogu, z którego aplikacja może go ładować -> calc.exe ładuje spreparowany plik .dll -> kod zostaje wykonany
+-> Sysmon rejestruje załadowanie DLL w Event ID 7 -> analityk sprawdza ścieżkę WININET.dll oraz jej podpis -> jeśli nie ma podpisu Microsoft i jest nietypowa lokalizacja pliku -> wykrycie ataku
+# Jak sie przed tym bronić? 
+1. Aktualizacja systemu
+2. Ograniczenie praw zapisu plików dll do katalogów systemowych
+3. Weryfikacja podpisu DLL
+* jeśli nie ma oczekiwanego podpisu
+* znajduje się w nietypowej lokalizacji 
+* różni się od oryginalnej wersji
+3a. Jak to zweryfikować?
+* Czy DLL ma prawidłowy podpis?
+- Get-AuthenticodeSignature "C:\ścieżka\WININET.dll" czego oczekujemy | Status : Valid SignerCertificate : Microsoft ...| 
+* Czy DLL znajduje się w nietypowej lokalizacji?
+- Normalnie korzsyta z | C:\Windows\System32\WININET.dll | 
+- a podejrzane jest | C:\Users\User\Desktop\WININET.dll | 
+* możesz też sprawdzić za pomocą hashu, wykorzystując PowerShell
+- Get-FileHash "C:\Windows\System32\WININET.dll" -Algorithm SHA256
+i
+- Get-FileHash "C:\Users\User\Desktop\WININET.dll" -Algorithm SHA256
+- jeżeli hashe są różne, to pliki nie są identyczne 
+4. Skonfigurowanie SOC pod Sysmon Event ID 7
