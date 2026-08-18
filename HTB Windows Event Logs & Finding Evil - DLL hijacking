@@ -22,3 +22,4 @@ i
 - Get-FileHash "C:\Users\User\Desktop\WININET.dll" -Algorithm SHA256
 - jeżeli hashe są różne, to pliki nie są identyczne 
 4. Skonfigurowanie SOC pod Sysmon Event ID 7
+Na postawie kursu HTB Windows Event Logs & Finding Evil - Windows Event Logs 
